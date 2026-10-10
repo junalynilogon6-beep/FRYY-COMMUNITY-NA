@@ -1,28 +1,25 @@
 
--- FRYY HUB V5 | Blue Neon Button
--- For your own Roblox experience
+-- FRYY HUB V5 | Mobile LocalScript
+-- Blue Neon • Draggable • Minimize • Close
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
-local old = playerGui:FindFirstChild("FRYYHubV5")
-if old then old:Destroy() end
-
 local gui = Instance.new("ScreenGui")
-gui.Name = "FRYYHubV5"
+gui.Name = "FRYY_HUB_V5"
 gui.ResetOnSpawn = false
-gui.Parent = playerGui
+gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 240, 0, 150)
-frame.Position = UDim2.new(0.5, -120, 0.5, -75)
-frame.BackgroundColor3 = Color3.fromRGB(8, 15, 35)
+frame.Size = UDim2.fromOffset(260, 300)
+frame.Position = UDim2.new(0.5, -130, 0.5, -150)
+frame.BackgroundColor3 = Color3.fromRGB(8, 16, 35)
 frame.BorderSizePixel = 0
+frame.Active = true
 frame.Parent = gui
 
-Instance.new("UICorner", frame).CornerRadius =
-    UDim.new(0, 12)
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
 
 local stroke = Instance.new("UIStroke")
 stroke.Color = Color3.fromRGB(0, 170, 255)
@@ -30,39 +27,102 @@ stroke.Thickness = 2
 stroke.Parent = frame
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 42)
+title.Size = UDim2.new(1, -80, 0, 42)
 title.BackgroundTransparency = 1
-title.Text = "⚡ FRYY HUB V5"
-title.TextColor3 = Color3.fromRGB(0, 200, 255)
-title.TextSize = 20
-title.Font = Enum.Font.GothamBold
+title.Text = "🔵 FRYY HUB V5"
+title.TextColor3 = Color3.fromRGB(80, 200, 255)
+title.TextSize = 18
 title.Parent = frame
 
-local button = Instance.new("TextButton")
-button.Size = UDim2.new(1, -24, 0, 48)
-button.Position = UDim2.new(0, 12, 0, 52)
-button.BackgroundColor3 = Color3.fromRGB(0, 75, 145)
-button.Text = "AUTO STEAL: OFF"
-button.TextColor3 = Color3.new(1, 1, 1)
-button.TextSize = 16
-button.Font = Enum.Font.GothamBold
-button.AutoButtonColor = true
-button.Parent = frame
+local function makeButton(text, y, callback)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(1, -24, 0, 42)
+    b.Position = UDim2.fromOffset(12, y)
+    b.BackgroundColor3 = Color3.fromRGB(15, 55, 95)
+    b.TextColor3 = Color3.new(1, 1, 1)
+    b.TextSize = 15
+    b.Text = text
+    b.Parent = frame
 
-Instance.new("UICorner", button).CornerRadius =
-    UDim.new(0, 8)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 8)
+    c.Parent = b
+    b.Activated:Connect(callback)
+    return b
+end
 
-local enabled = false
+-- Minimize and reopen
+local mini = Instance.new("TextButton")
+mini.Size = UDim2.fromOffset(36, 36)
+mini.Position = UDim2.new(1, -42, 0, 4)
+mini.Text = "—"
+mini.Parent = frame
 
-button.Activated:Connect(function()
-    enabled = not enabled
+local reopen = Instance.new("TextButton")
+reopen.Size = UDim2.fromOffset(52, 52)
+reopen.Position = UDim2.new(0, 16, 0.5, 0)
+reopen.Text = "FRYY"
+reopen.Visible = false
+reopen.BackgroundColor3 = Color3.fromRGB(0, 100, 220)
+reopen.TextColor3 = Color3.new(1, 1, 1)
+reopen.Parent = gui
 
-    button.Text = enabled
-        and "AUTO STEAL: ON"
-        or "AUTO STEAL: OFF"
+mini.Activated:Connect(function()
+    frame.Visible = false
+    reopen.Visible = true
+end)
 
-    button.BackgroundColor3 = enabled
-        and Color3.fromRGB(0, 145, 190)
-        or Color3.fromRGB(0, 75, 145)
+reopen.Activated:Connect(function()
+    frame.Visible = true
+    reopen.Visible = false
+end)
+
+makeButton("Auto Steal", 60, function()
+    warn("Auto Steal: connect to a permitted game interaction.")
+end)
+
+makeButton("Instant Steal", 110, function()
+    warn("Instant Steal: game server support required.")
+end)
+
+makeButton("Return to Base", 160, function()
+    warn("Return to Base: use a supported in-game teleport.")
+end)
+
+makeButton("Close GUI", 210, function()
+    gui:Destroy()
+end)
+
+-- Drag using touch or mouse
+local UIS = game:GetService("UserInputService")
+local dragging, dragStart, startPos
+
+title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and (
+        input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseMovement
+    ) then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
 end)
 
