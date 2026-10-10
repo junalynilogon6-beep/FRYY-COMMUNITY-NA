@@ -1,16 +1,68 @@
 
+-- FRYY HUB V5 | Blue Neon Button
+-- For your own Roblox experience
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local old = playerGui:FindFirstChild("FRYYHubV5")
+if old then old:Destroy() end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "FRYYHubV5"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 240, 0, 150)
+frame.Position = UDim2.new(0.5, -120, 0.5, -75)
+frame.BackgroundColor3 = Color3.fromRGB(8, 15, 35)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+
+Instance.new("UICorner", frame).CornerRadius =
+    UDim.new(0, 12)
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(0, 170, 255)
+stroke.Thickness = 2
+stroke.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 42)
+title.BackgroundTransparency = 1
+title.Text = "⚡ FRYY HUB V5"
+title.TextColor3 = Color3.fromRGB(0, 200, 255)
+title.TextSize = 20
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(1, -24, 0, 48)
+button.Position = UDim2.new(0, 12, 0, 52)
+button.BackgroundColor3 = Color3.fromRGB(0, 75, 145)
+button.Text = "AUTO STEAL: OFF"
+button.TextColor3 = Color3.new(1, 1, 1)
+button.TextSize = 16
+button.Font = Enum.Font.GothamBold
+button.AutoButtonColor = true
+button.Parent = frame
+
+Instance.new("UICorner", button).CornerRadius =
+    UDim.new(0, 8)
+
+local enabled = false
+
 button.Activated:Connect(function()
-    print("🔵 FRYY HUB V3: " .. name .. " clicked!")
+    enabled = not enabled
 
-    local playerGui = player:FindFirstChild("PlayerGui")
-    if playerGui then
-        local message = Instance.new("Message")
-        message.Text = name .. " button clicked!"
-        message.Parent = workspace
+    button.Text = enabled
+        and "AUTO STEAL: ON"
+        or "AUTO STEAL: OFF"
 
-        task.delay(2, function()
-            message:Destroy()
-        end)
-    end
+    button.BackgroundColor3 = enabled
+        and Color3.fromRGB(0, 145, 190)
+        or Color3.fromRGB(0, 75, 145)
 end)
 
