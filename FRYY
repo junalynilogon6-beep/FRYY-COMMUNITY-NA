@@ -1,128 +1,82 @@
 
--- FRYY HUB V5 | Mobile LocalScript
--- Blue Neon • Draggable • Minimize • Close
+local HUB_TITLE = "FRYY HUB"
 
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local gui = Instance.new("ScreenGui")
-gui.Name = "FRYY_HUB_V5"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
+SAEConfig = _G.SAEConfig or {
+    ["Movement"] = {
+        ["Mode"] = "Teleport",
+        ["Speed"] = 800,
+    },
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.fromOffset(260, 300)
-frame.Position = UDim2.new(0.5, -130, 0.5, -150)
-frame.BackgroundColor3 = Color3.fromRGB(8, 16, 35)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Parent = gui
+    ["Farming"] = {
+        ["Auto Tutorial"] = true,
+        ["Auto Full Index"] = true,
+        ["Auto Treadmill"] = true,
+        ["Auto Upgrade Treadmill"] = true,
+        ["Auto Upgrade Base"] = true,
+        ["Auto Place"] = true,
+        ["Auto Hatch"] = true,
+        ["Auto Claim Reward Index"] = true,
+        ["Auto Equip Best Pets"] = true,
+        ["Claim Offline Earnings"] = true,
+    },
 
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 12)
-corner.Parent = frame
+    ["Stealing"] = {
+        ["Auto Steal"] = true,
+        ["Farm Areas"] = {},
+        ["Target Rarities"] = {},
+        ["Target Mutations"] = {},
+        ["Minimum Value"] = 0,
+    },
 
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(0, 170, 255)
-stroke.Thickness = 2
-stroke.Parent = frame
+    ["Selling"] = {
+        ["Auto Sell Pets"] = false,
+        ["Auto Sell Eggs"] = false,
+        ["Target Rarities"] = {},
+        ["Minimum Value"] = 0,
+        ["Weight Mode"] = "None",
+        ["Weight"] = 10,
+        ["Delay"] = 5,
+    },
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -80, 0, 42)
-title.BackgroundTransparency = 1
-title.Text = "🔵 FRYY HUB V5"
-title.TextColor3 = Color3.fromRGB(80, 200, 255)
-title.TextSize = 18
-title.Parent = frame
+    ["Favoriting"] = {
+        ["Auto Favorite"] = false,
+        ["Target Categories"] = {},
+        ["Target Rarities"] = {},
+    },
 
-local function makeButton(text, y, callback)
-    local b = Instance.new("TextButton")
-    b.Size = UDim2.new(1, -24, 0, 42)
-    b.Position = UDim2.fromOffset(12, y)
-    b.BackgroundColor3 = Color3.fromRGB(15, 55, 95)
-    b.TextColor3 = Color3.new(1, 1, 1)
-    b.TextSize = 15
-    b.Text = text
-    b.Parent = frame
+    ["Fusing"] = {
+        ["Auto Fuse"] = false,
+        ["Target Categories"] = {},
+        ["Target Rarities"] = {},
+    },
 
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, 8)
-    c.Parent = b
-    b.Activated:Connect(callback)
-    return b
-end
+    ["Events"] = {
+        ["Dr. Scramble"] = {
+            ["Auto Hunt Experiments"] = false,
+            ["Minimum Drone HP"] = 0,
+            ["Auto Collect Gear"] = false,
+            ["Auto Buy Shop"] = false,
+            ["Shop Item"] = "Scrambled",
+        },
+    },
 
--- Minimize and reopen
-local mini = Instance.new("TextButton")
-mini.Size = UDim2.fromOffset(36, 36)
-mini.Position = UDim2.new(1, -42, 0, 4)
-mini.Text = "—"
-mini.Parent = frame
+    ["Webhook"] = {
+        ["URL"] = "",
+        ["Rarities"] = {},
+        ["Notify On Steal"] = false,
+        ["Notify On Hatch"] = false,
+    },
 
-local reopen = Instance.new("TextButton")
-reopen.Size = UDim2.fromOffset(52, 52)
-reopen.Position = UDim2.new(0, 16, 0.5, 0)
-reopen.Text = "FRYY"
-reopen.Visible = false
-reopen.BackgroundColor3 = Color3.fromRGB(0, 100, 220)
-reopen.TextColor3 = Color3.new(1, 1, 1)
-reopen.Parent = gui
+    ["Misc"] = {
+        ["Anti AFK"] = true,
+        ["Auto Reconnect"] = true,
+        ["FPS Boost"] = false,
+    },
+}
 
-mini.Activated:Connect(function()
-    frame.Visible = false
-    reopen.Visible = true
-end)
+_G.SAEConfig = SAEConfig
 
-reopen.Activated:Connect(function()
-    frame.Visible = true
-    reopen.Visible = false
-end)
+-- Use this text for your GUI title:
+-- header.Text = HUB_TITLE
 
-makeButton("Auto Steal", 60, function()
-    warn("Auto Steal: connect to a permitted game interaction.")
-end)
-
-makeButton("Instant Steal", 110, function()
-    warn("Instant Steal: game server support required.")
-end)
-
-makeButton("Return to Base", 160, function()
-    warn("Return to Base: use a supported in-game teleport.")
-end)
-
-makeButton("Close GUI", 210, function()
-    gui:Destroy()
-end)
-
--- Drag using touch or mouse
-local UIS = game:GetService("UserInputService")
-local dragging, dragStart, startPos
-
-title.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = frame.Position
-    end
-end)
-
-UIS.InputChanged:Connect(function(input)
-    if dragging and (
-        input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseMovement
-    ) then
-        local delta = input.Position - dragStart
-        frame.Position = UDim2.new(
-            startPos.X.Scale, startPos.X.Offset + delta.X,
-            startPos.Y.Scale, startPos.Y.Offset + delta.Y
-        )
-    end
-end)
-
-UIS.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
 
