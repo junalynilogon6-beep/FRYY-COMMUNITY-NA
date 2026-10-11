@@ -1,82 +1,106 @@
 
-local HUB_TITLE = "FRYY HUB"
+-- FRYY HUB V3 | BLUE NEON
+-- LocalScript | GUI + Close/Reopen + Auto Steal toggle
 
-SAEConfig = _G.SAEConfig or {
-    ["Movement"] = {
-        ["Mode"] = "Teleport",
-        ["Speed"] = 800,
-    },
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "FRYY_HUB"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
-    ["Farming"] = {
-        ["Auto Tutorial"] = true,
-        ["Auto Full Index"] = true,
-        ["Auto Treadmill"] = true,
-        ["Auto Upgrade Treadmill"] = true,
-        ["Auto Upgrade Base"] = true,
-        ["Auto Place"] = true,
-        ["Auto Hatch"] = true,
-        ["Auto Claim Reward Index"] = true,
-        ["Auto Equip Best Pets"] = true,
-        ["Claim Offline Earnings"] = true,
-    },
+local blue = Color3.fromRGB(0, 170, 255)
+local dark = Color3.fromRGB(8, 16, 36)
 
-    ["Stealing"] = {
-        ["Auto Steal"] = true,
-        ["Farm Areas"] = {},
-        ["Target Rarities"] = {},
-        ["Target Mutations"] = {},
-        ["Minimum Value"] = 0,
-    },
+local function makeButton(parent, text, size, pos)
+    local b = Instance.new("TextButton")
+    b.Size = size
+    b.Position = pos
+    b.BackgroundColor3 = Color3.fromRGB(19, 48, 83)
+    b.TextColor3 = Color3.new(1, 1, 1)
+    b.Text = text
+    b.TextScaled = true
+    b.Font = Enum.Font.GothamBold
+    b.Parent = parent
+    Instance.new("UICorner", b).CornerRadius =
+        UDim.new(0, 12)
+    local stroke = Instance.new("UIStroke", b)
+    stroke.Color = blue
+    stroke.Thickness = 1.5
+    return b
+end
 
-    ["Selling"] = {
-        ["Auto Sell Pets"] = false,
-        ["Auto Sell Eggs"] = false,
-        ["Target Rarities"] = {},
-        ["Minimum Value"] = 0,
-        ["Weight Mode"] = "None",
-        ["Weight"] = 10,
-        ["Delay"] = 5,
-    },
+local panel = Instance.new("Frame")
+panel.Size = UDim2.new(0, 320, 0, 270)
+panel.Position = UDim2.new(0.5, -160, 0.5, -135)
+panel.BackgroundColor3 = dark
+panel.Parent = gui
+Instance.new("UICorner", panel).CornerRadius =
+    UDim.new(0, 18)
+local outline = Instance.new("UIStroke", panel)
+outline.Color = blue
+outline.Thickness = 2
 
-    ["Favoriting"] = {
-        ["Auto Favorite"] = false,
-        ["Target Categories"] = {},
-        ["Target Rarities"] = {},
-    },
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0.72, 0, 0, 45)
+title.Position = UDim2.new(0, 12, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "⚡ FRYY HUB V3"
+title.TextColor3 = blue
+title.TextScaled = true
+title.Font = Enum.Font.GothamBlack
+title.Parent = panel
 
-    ["Fusing"] = {
-        ["Auto Fuse"] = false,
-        ["Target Categories"] = {},
-        ["Target Rarities"] = {},
-    },
+local close = makeButton(panel, "X",
+    UDim2.new(0, 40, 0, 38),
+    UDim2.new(1, -48, 0, 8))
 
-    ["Events"] = {
-        ["Dr. Scramble"] = {
-            ["Auto Hunt Experiments"] = false,
-            ["Minimum Drone HP"] = 0,
-            ["Auto Collect Gear"] = false,
-            ["Auto Buy Shop"] = false,
-            ["Shop Item"] = "Scrambled",
-        },
-    },
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(1, -20, 0, 35)
+status.Position = UDim2.new(0, 10, 0, 55)
+status.BackgroundTransparency = 1
+status.Text = "● FRYY HUB READY"
+status.TextColor3 = Color3.fromRGB(60, 255, 170)
+status.TextScaled = true
+status.Font = Enum.Font.GothamBold
+status.Parent = panel
 
-    ["Webhook"] = {
-        ["URL"] = "",
-        ["Rarities"] = {},
-        ["Notify On Steal"] = false,
-        ["Notify On Hatch"] = false,
-    },
+local enabled = false
+local auto = makeButton(panel, "AUTO STEAL: OFF",
+    UDim2.new(1, -30, 0, 55),
+    UDim2.new(0, 15, 0, 105))
 
-    ["Misc"] = {
-        ["Anti AFK"] = true,
-        ["Auto Reconnect"] = true,
-        ["FPS Boost"] = false,
-    },
-}
+auto.Activated:Connect(function()
+    enabled = not enabled
+    auto.Text = enabled and
+        "AUTO STEAL: ON" or "AUTO STEAL: OFF"
+    status.Text = enabled and
+        "Toggle ON — ready to configure" or
+        "● FRYY HUB READY"
+end)
 
-_G.SAEConfig = SAEConfig
+local info = makeButton(panel, "EGG STEAL STATUS",
+    UDim2.new(1, -30, 0, 45),
+    UDim2.new(0, 15, 0, 175))
 
--- Use this text for your GUI title:
--- header.Text = HUB_TITLE
+info.Activated:Connect(function()
+    status.Text = "Use the game's egg interaction"
+end)
+
+local reopen = makeButton(gui, "⚡ FRYY",
+    UDim2.new(0, 90, 0, 45),
+    UDim2.new(0, 15, 0.5, -22))
+reopen.Visible = false
+
+close.Activated:Connect(function()
+    panel.Visible = false
+    reopen.Visible = true
+end)
+
+reopen.Activated:Connect(function()
+    panel.Visible = true
+    reopen.Visible = false
+end)
+
 
 
